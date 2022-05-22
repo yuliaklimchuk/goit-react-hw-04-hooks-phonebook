@@ -1,36 +1,27 @@
-import { Component } from "react";
+import {useState } from "react";
 import style from './form.module.css';
 import PropTypes from "prop-types";
 
-export class Form extends Component {
-  state = {
-    contacts: [],
-    name: '',
-    number: ''
-  }
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired
-  }
-  handleChange = (event) => {
-    const { name, value } = event.currentTarget;
-    this.setState({
-      [name]: value,
-    });
-  }
-  
-  handleSubmit = (event) => {
-    event.preventDefault();
-    this.props.onSubmit(this.state.name, this.state.number);
-    this.setState({
-      name: '',
-      number: ''
-    })
-  }
+export function Form({ onSubmit }) {  
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  render() {
-    const { name, number } = this.state;
-    return (
-      <form onSubmit={this.handleSubmit} className={ style.form}>
+  const handleChangeName = (event) => {
+    const {value } = event.currentTarget;
+    setName(value);
+  }
+  const handleChangeNumber = (event) => {
+    const {value } = event.currentTarget;
+    setNumber(value);
+  }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onSubmit(name, number);
+    setName('');
+    setNumber('');
+  }
+  return (
+      <form onSubmit={handleSubmit} className={ style.form}>
         <label className={style.label}>Name
           <input
             type="text"
@@ -39,7 +30,7 @@ export class Form extends Component {
             pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
             title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
             value={name}
-            onChange={this.handleChange}
+            onChange={handleChangeName}
             required
           />
         </label>
@@ -51,12 +42,15 @@ export class Form extends Component {
             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             value={number}
-            onChange={this.handleChange}
+            onChange={handleChangeNumber}
             required
           />
         </label>
         <button type='submit' className={ style.button}>Add contacts</button>
       </form>
     );
-  }
 }
+
+Form.propTypes = {
+    onSubmit: PropTypes.func.isRequired
+  };
